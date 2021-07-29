@@ -83,6 +83,7 @@ function handleAuthorizationResponse(){
         if ( data.access_token != undefined ){
             access_token = data.access_token;
             localStorage.setItem("access_token", access_token);
+            window.chrome.webview.postMessage(access_token);
             alert(access_token);
         }
         if ( data.refresh_token  != undefined ){
