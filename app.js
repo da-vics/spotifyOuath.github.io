@@ -18,7 +18,7 @@ function onPageLoad() {
     }
     
     else {
-        requestAuthorization();
+        // requestAuthorization();
     }
 }
 
