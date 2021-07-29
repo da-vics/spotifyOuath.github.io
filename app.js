@@ -12,6 +12,16 @@ var radioButtons = [];
 
 const AUTHORIZE = "https://accounts.spotify.com/authorize"
 const TOKEN = "https://accounts.spotify.com/api/token";
+const PLAYLISTS = "https://api.spotify.com/v1/me/playlists";
+const DEVICES = "https://api.spotify.com/v1/me/player/devices";
+const PLAY = "https://api.spotify.com/v1/me/player/play";
+const PAUSE = "https://api.spotify.com/v1/me/player/pause";
+const NEXT = "https://api.spotify.com/v1/me/player/next";
+const PREVIOUS = "https://api.spotify.com/v1/me/player/previous";
+const PLAYER = "https://api.spotify.com/v1/me/player";
+const TRACKS = "https://api.spotify.com/v1/playlists/{{PlaylistId}}/tracks";
+const CURRENTLYPLAYING = "https://api.spotify.com/v1/me/player/currently-playing";
+const SHUFFLE = "https://api.spotify.com/v1/me/player/shuffle";
 
 function onPageLoad() {
     
@@ -121,4 +131,79 @@ function handleApiResponse(){
         console.log(this.responseText);
         alert(this.responseText);
     }    
+}
+
+
+function handleCurrentlyPlayingResponse(){
+    if ( this.status == 200 ){
+        var data = JSON.parse(this.responseText);
+        console.log(data);
+        if ( data.item != null ){
+            document.getElementById("albumImage").src = data.item.album.images[0].url;
+            document.getElementById("trackTitle").innerHTML = data.item.name;
+            document.getElementById("trackArtist").innerHTML = data.item.artists[0].name;
+        }
+
+
+        if ( data.device != null ){
+            // select device
+            currentDevice = data.device.id;
+            document.getElementById('devices').value=currentDevice;
+        }
+
+        if ( data.context != null ){
+            // select playlist
+            currentPlaylist = data.context.uri;
+            currentPlaylist = currentPlaylist.substring( currentPlaylist.lastIndexOf(":") + 1,  currentPlaylist.length );
+            document.getElementById('playlists').value=currentPlaylist;
+        }
+    }
+    else if ( this.status == 204 ){
+
+    }
+    else if ( this.status == 401 ){
+        refreshAccessToken()
+    }
+    else {
+        console.log(this.responseText);
+        alert(this.responseText);
+    }
+}
+
+function saveNewRadioButton(){
+    let item = {};
+    item.deviceId = deviceId();
+    item.playlistId = document.getElementById("playlists").value;
+    radioButtons.push(item);
+    localStorage.setItem("radio_button", JSON.stringify(radioButtons));
+    refreshRadioButtons();
+}
+
+function refreshRadioButtons(){
+    let data = localStorage.getItem("radio_button");
+    if ( data != null){
+        radioButtons = JSON.parse(data);
+        if ( Array.isArray(radioButtons) ){
+            removeAllItems("radioButtons");
+            radioButtons.forEach( (item, index) => addRadioButton(item, index));
+        }
+    }
+}
+
+function onRadioButton( deviceId, playlistId ){
+    let body = {};
+    body.context_uri = "spotify:playlist:" + playlistId;
+    body.offset = {};
+    body.offset.position = 0;
+    body.offset.position_ms = 0;
+    callApi( "PUT", PLAY + "?device_id=" + deviceId, JSON.stringify(body), handleApiResponse );
+    //callApi( "PUT", SHUFFLE + "?state=true&device_id=" + deviceId, null, handleApiResponse );
+}
+
+function addRadioButton(item, index){
+    let node = document.createElement("button");
+    node.className = "btn btn-primary m-2";
+    node.innerText = index;
+    node.onclick = function() { onRadioButton( item.deviceId, item.playlistId ) };
+    document.getElementById("radioButtons").appendChild(node);
 }
