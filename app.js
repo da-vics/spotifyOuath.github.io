@@ -16,15 +16,9 @@ function onPageLoad() {
     if ( window.location.search.length > 0 ){
         handleRedirect();
     }
-    else{
-        access_token = localStorage.getItem("access_token");
-        if ( access_token == null ){
-            // we don't have an access token so present token section
-            document.getElementById("tokenSection").style.display = 'block';  
-        }
-        else {
+    
+    else {
 
-        }
     }
 }
 
