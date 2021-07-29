@@ -1,4 +1,4 @@
-var redirect_uri = "https://spotifylogin.netlify.app/"; // change this your value
+var redirect_uri = "https://spotifylogin.netlify.app/update"; // change this your value
 //var redirect_uri = "http://127.0.0.1:5500/index.html";
  
 
@@ -43,6 +43,7 @@ function onPageLoad(){
             currentlyPlaying();
         }
     }
+    refreshRadioButtons();
 }
 
 function handleRedirect(){
@@ -327,3 +328,40 @@ function handleCurrentlyPlayingResponse(){
     }
 }
 
+function saveNewRadioButton(){
+    let item = {};
+    item.deviceId = deviceId();
+    item.playlistId = document.getElementById("playlists").value;
+    radioButtons.push(item);
+    localStorage.setItem("radio_button", JSON.stringify(radioButtons));
+    refreshRadioButtons();
+}
+
+function refreshRadioButtons(){
+    let data = localStorage.getItem("radio_button");
+    if ( data != null){
+        radioButtons = JSON.parse(data);
+        if ( Array.isArray(radioButtons) ){
+            removeAllItems("radioButtons");
+            radioButtons.forEach( (item, index) => addRadioButton(item, index));
+        }
+    }
+}
+
+function onRadioButton( deviceId, playlistId ){
+    let body = {};
+    body.context_uri = "spotify:playlist:" + playlistId;
+    body.offset = {};
+    body.offset.position = 0;
+    body.offset.position_ms = 0;
+    callApi( "PUT", PLAY + "?device_id=" + deviceId, JSON.stringify(body), handleApiResponse );
+    //callApi( "PUT", SHUFFLE + "?state=true&device_id=" + deviceId, null, handleApiResponse );
+}
+
+function addRadioButton(item, index){
+    let node = document.createElement("button");
+    node.className = "btn btn-primary m-2";
+    node.innerText = index;
+    node.onclick = function() { onRadioButton( item.deviceId, item.playlistId ) };
+    document.getElementById("radioButtons").appendChild(node);
+}
