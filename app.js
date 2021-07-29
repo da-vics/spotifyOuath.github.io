@@ -25,7 +25,7 @@ function onPageLoad() {
 function handleRedirect(){
     let code = getCode();
     fetchAccessToken( code );
-    // window.history.pushState("", "", redirect_uri); // remove param from url
+    window.history.pushState("", "", redirect_uri); // remove param from url
 }
 
 function getCode(){
