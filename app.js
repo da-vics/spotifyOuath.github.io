@@ -87,12 +87,12 @@ function handleAuthorizationResponse(){
         if ( data.refresh_token  != undefined ){
             refresh_token = data.refresh_token;
             localStorage.setItem("refresh_token", refresh_token);
-            alert(refresh_token);
+            // alert(refresh_token);
         }
         onPageLoad();
     }
     else {
         console.log(this.responseText);
-        alert(this.responseText);
+        // alert(this.responseText);
     }
 }
