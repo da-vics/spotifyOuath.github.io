@@ -1,7 +1,7 @@
 var redirect_uri = "https://spotifylogin.netlify.app/"; // change this your value
 
 var client_id = "666cb2ee62b3403fb0a16677154734cd"; 
-var client_secret = "722fb221937f43208f1806657ef39f6f"; // In a real app you should not expose your client_secret to the user
+var client_secret = "722fb221937f43208f1806657ef39f6f"; // 
 
 var access_token = null;
 var refresh_token = null;
